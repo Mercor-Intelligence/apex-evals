@@ -196,7 +196,7 @@ async def execute_single_llm_call(
             title="call_llm module not found",
             summary=(
                 "The call_llm package could not be imported. "
-                "This usually happens when scripts are executed outside the oss-sdk root."
+                "This usually happens when scripts are executed outside the apex-eval root."
             ),
             context={
                 "working_dir": str(Path.cwd()),
@@ -204,13 +204,13 @@ async def execute_single_llm_call(
             },
             probable_causes=[
                 "You are running a script from a different directory without updating PYTHONPATH.",
-                "The oss-sdk/src folder is not on sys.path.",
+                "The apex-eval/src folder is not on sys.path.",
             ],
             next_steps=[
-                "Run commands from the oss-sdk directory or install evalinfra-sdk in editable mode.",
-                "Ensure `sys.path.insert(0, '<repo>/oss-sdk/src')` is executed before importing.",
+                "Run commands from the apex-eval directory or install apex-eval in editable mode.",
+                "Ensure `sys.path.insert(0, '<repo>/apex-eval/src')` is executed before importing.",
             ],
-            tips=["`pip install -e .` inside oss-sdk adds call_llm to your environment automatically."],
+            tips=["`pip install -e .` inside apex-eval adds call_llm to your environment automatically."],
         ) from exc
 
     try:

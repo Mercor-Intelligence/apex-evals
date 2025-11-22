@@ -1,6 +1,6 @@
-## evalinfra Python package – API overview
+## apex-eval Python package – API overview
 
-This document describes the small, single-task API surface of the evalinfra Python package. It focuses on running one generation or one grading task at a time, without any CSV or bulk job abstractions.
+This document describes the small, single-task API surface of the apex-eval Python package. It focuses on running one generation or one grading task at a time, without any CSV or bulk job abstractions.
 
 ---
 
@@ -168,7 +168,7 @@ Summary of grading outcomes.
 
 The package raises structured exceptions defined in `errors`:
 
-- `EvalInfraError` – base class for structured errors.
+- `ApexEvalError` – base class for structured errors.
 - `UserInputError` – configuration or caller input issues.
 - `SystemExecutionError` – system-level or provider issues.
 

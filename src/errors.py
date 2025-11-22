@@ -95,10 +95,10 @@ class ErrorDetails:
     docs_link: Optional[str] = None
 
 
-class EvalInfraError(ValueError):
+class ApexEvalError(ValueError):
     """Base structured error."""
     
-    category = "EVAL INFRA ERROR"
+    category = "APEX EVAL ERROR"
     
     def __init__(
         self,
@@ -150,20 +150,20 @@ class EvalInfraError(ValueError):
         return super().__str__()
 
 
-class UserInputError(EvalInfraError):
+class UserInputError(ApexEvalError):
     """Configuration/input error."""
     
     category = "USER ACTION REQUIRED"
 
 
-class SystemExecutionError(EvalInfraError):
+class SystemExecutionError(ApexEvalError):
     """System execution error."""
     
     category = "SYSTEM ISSUE DETECTED"
 
 
 __all__ = [
-    "EvalInfraError",
+    "ApexEvalError",
     "UserInputError",
     "SystemExecutionError",
     "render_error_panel",

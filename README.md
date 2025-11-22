@@ -6,7 +6,7 @@ Simple Python package for LLM evaluation. Generate responses from multiple LLM p
 
 ```bash
 # Clone and navigate
-cd oss-eval
+cd apex-eval
 
 # Create virtual environment
 python3 -m venv .venv

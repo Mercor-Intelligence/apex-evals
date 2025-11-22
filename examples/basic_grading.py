@@ -1,5 +1,5 @@
 """
-Minimal single-task grading example using the evalinfra Python package.
+Minimal single-task grading example using the apex-eval Python package.
 
 Always create and activate a virtual environment before running this script.
 """

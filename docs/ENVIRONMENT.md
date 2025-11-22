@@ -1,6 +1,6 @@
-## evalinfra Python package – Environment & configuration
+## apex-eval Python package – Environment & configuration
 
-This document lists the main environment variables and configuration expectations for using the `evalinfra` Python package for single-task generation and grading.
+This document lists the main environment variables and configuration expectations for using the `apex-eval` Python package for single-task generation and grading.
 
 Always create and activate a virtual environment before installing and running Python scripts.
 
@@ -21,7 +21,7 @@ If you install the package from PyPI instead of a local checkout:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install evalinfra-sdk
+pip install apex-eval
 ```
 
 ---
@@ -81,7 +81,7 @@ You can also set environment variables directly in your shell instead of using `
 
 - **Missing module or import errors**
   - Ensure your virtual environment is activated.
-  - Confirm the package is installed: `pip show evalinfra-sdk`.
+  - Confirm the package is installed: `pip show apex-eval`.
 
 - **“API key not found” or authentication failures**
   - Verify the corresponding environment variable is set (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.).

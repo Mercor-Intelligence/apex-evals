@@ -204,21 +204,43 @@ async def _download_single(
         logger.warning("Skipping attachment with missing fields: %s", attachment)
         return None
 
+    max_retries = 3
+    base_delay = 1.0  # seconds
+    
     async with semaphore:
-        try:
-            async with session.get(url) as response:
-                if response.status != 200:
-                    logger.warning("Failed to download %s (%s): HTTP %s", filename, url, response.status)
+        for attempt in range(max_retries):
+            try:
+                async with session.get(url) as response:
+                    if response.status != 200:
+                        error_msg = f"Failed to download {filename} ({url}): HTTP {response.status}"
+                        if attempt < max_retries - 1:
+                            delay = base_delay * (2 ** attempt)
+                            logger.warning("%s - Retrying in %.1f seconds (attempt %d/%d)", 
+                                         error_msg, delay, attempt + 1, max_retries)
+                            await asyncio.sleep(delay)
+                            continue
+                        else:
+                            logger.warning("%s - All retries exhausted", error_msg)
+                            return None
+                    content = await response.read()
+                    if attempt > 0:
+                        logger.info("Successfully downloaded %s on attempt %d/%d", filename, attempt + 1, max_retries)
+                    return {
+                        "filename": filename,
+                        "url": url,
+                        "content": content,
+                        "size": len(content),
+                    }
+            except Exception as exc:
+                error_msg = f"Failed to download {filename}: {exc}"
+                if attempt < max_retries - 1:
+                    delay = base_delay * (2 ** attempt)
+                    logger.warning("%s - Retrying in %.1f seconds (attempt %d/%d)", 
+                                 error_msg, delay, attempt + 1, max_retries)
+                    await asyncio.sleep(delay)
+                else:
+                    logger.warning("%s - All retries exhausted", error_msg)
                     return None
-                content = await response.read()
-        except Exception as exc:
-            logger.warning("Failed to download %s: %s", filename, exc)
-            return None
 
-    return {
-        "filename": filename,
-        "url": url,
-        "content": content,
-        "size": len(content),
-    }
+    return None
 

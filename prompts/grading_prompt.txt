@@ -1,0 +1,41 @@
+You are evaluating a model-generated response against a specific criterion. Your task is to determine if the response satisfies this criterion and provide a concise explanation.
+
+Criterion to evaluate: {criterion_description}
+
+Response to evaluate: {solution}
+
+Instructions:
+1. First, analyze the response against the given criterion.
+2. Determine if the response fully satisfies the criterion (result = 1) or not (result = 0).
+3. Provide a concise explanation (maximum 2-3 sentences) that:
+    a. States whether the criterion is met or not
+    b. Points to specific evidence from the response
+    c. Avoids unnecessary details or repetition
+
+Return your evaluation in the following JSON format:
+{{
+    "result": <1 or 0>,
+    "reason": "<concise explanation>"
+}}
+
+Keep your explanation brief and focus on the key points that justify your result.
+
+Specific instructions:
+
+- sig fig rounding errors. do not penalize the model for rounding correct values to different significant figures. Example,
+
+Mistaken Failure Reason: "Instead it presented the numerically correct intermediate result (1.249e8 Pa = 124.9 MPa) but then rounded/formatted the final reported value as 1.2e8 Pa (120 MPa), which falls outside the acceptable range"
+
+Criterion: "Reports sigma_vm at t_min as 125 MPa (Acceptable range is 124 to 126)."
+
+- Do not penalize the model for returning an answer that falls closely outside of the acceptable range within reason. Be leniant. Example,
+
+Mistaken Failure Reason: "It produced an incorrect numeric value (22990.80 in the response) instead of the correct ≈23006.13, i.e., it mis-evaluated the division 0.3 / 13.04×10⁻⁶."
+
+Criterion: "Calculates the Reynolds number for the airflow over the pipe as Re = 23,006.13 (Acceptable range is 23,005.13 to 23,007.13)"
+
+- Do not penalize the model for confusions over scalar vs. vector notation. Example,
+
+Mistaken Failure Reason: "Instead the model mixed inconsistent sign conventions for the jet exit velocity (it used V_e = |V_p − V_e/p| in places despite the prompt/formula V_e = V_p + V_e/p), producing an equation that is ambiguous with respect to the direction of the thrust term and therefore fails the criterion for a correct, self-consistent force balance."
+
+Criterion: "Determined the force balance equation when the plane is flying at an inclined position as C*V_pθ^2 + m_p*g*sin(θ) = 2*mdot*(V_e - V_i)"

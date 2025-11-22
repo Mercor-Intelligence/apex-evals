@@ -1,0 +1,25 @@
+# Core LLM dependency
+litellm
+
+# Data and validation
+pydantic>=2.0.0
+
+# Async HTTP
+aiohttp
+
+# Document parsing
+reductoai
+
+# Utilities
+python-dotenv
+tqdm
+ijson
+
+# Development dependencies (optional)
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+black>=23.0.0
+ruff>=0.1.0
+mypy>=1.7.0
+

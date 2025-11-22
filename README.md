@@ -1,4 +1,4 @@
-# Eval Infra Python Package
+# Apex Eval Python Package
 
 Simple Python package for LLM evaluation. Generate responses from multiple LLM providers and grade them against rubrics.
 
@@ -347,17 +347,11 @@ print(f"Percentage: {grade_result.percentage_score}%")
 
 **"Parser validation failed"**
 - Verify REDUCTO_API_KEY is set
+- Verify reducto is installed
 
 **Rate limits**
 - SDK has built-in retry logic
-- Adjust `temperature` or use cheaper models
-
-## Cost Optimization
-
-1. Use cheaper models: `gpt-4o-mini`, `gemini-2.5-flash`
-2. Set `max_input_tokens` to limit context
-3. Set `max_tokens` to limit output
-4. For grading, use `gemini-2.5-flash` (default)
+- Check your api keys limit
 
 ## License
 

@@ -3,10 +3,10 @@ requires = ["setuptools>=65.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "evalinfra-sdk"
+name = "apex-eval"
 version = "0.1.0"
-description = "Python SDK for LLM evaluation infrastructure"
-authors = [{name = "Eval Infra Team"}]
+description = "Python package for LLM evaluation"
+authors = [{name = "Mercor Intelligence"}]
 license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.9"

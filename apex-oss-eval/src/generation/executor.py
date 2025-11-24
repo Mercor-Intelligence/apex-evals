@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
-from src.parser import parse_documents
+from parser import parse_documents
 from errors import UserInputError
 from handler.validator import ConfigValidator
 

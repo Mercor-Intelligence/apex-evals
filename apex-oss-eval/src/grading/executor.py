@@ -440,7 +440,7 @@ async def grade_solution_against_rubric(
         )
 
         return {
-            "points_earned": round(percentage_score, 2),
+            "points_earned": float(total_earned),
             "points_possible": total_possible,
             "percentage_score": round(percentage_score, 2),
             "criteria_results": valid_results,

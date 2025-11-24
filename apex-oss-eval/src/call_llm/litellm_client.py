@@ -80,6 +80,7 @@ class LiteLLMClient(BaseLLMProvider):
 
         # Google models (Gemini)
         "google": [
+            "gemini-3-pro-preview",
             "gemini-pro",
             "gemini-1.5-pro",
             "gemini-1.5-flash",
@@ -144,7 +145,6 @@ class LiteLLMClient(BaseLLMProvider):
 
         # Configure LiteLLM settings
         litellm.drop_params = True  # Automatically drop unsupported parameters
-        os.environ['LITELLM_LOG'] = 'INFO'
 
     @property
     def provider_name(self) -> LLMProvider:

@@ -204,6 +204,26 @@ async def _download_single(
         logger.warning("Skipping attachment with missing fields: %s", attachment)
         return None
 
+    # Handle local file:// URLs
+    if url.startswith("file://"):
+        file_path = url[7:]  # Remove "file://" prefix
+        try:
+            with open(file_path, "rb") as f:
+                content = f.read()
+            logger.info("Read local file: %s (%d bytes)", filename, len(content))
+            return {
+                "filename": filename,
+                "url": url,
+                "content": content,
+                "size": len(content),
+            }
+        except FileNotFoundError:
+            logger.warning("Local file not found: %s", file_path)
+            return None
+        except Exception as exc:
+            logger.warning("Failed to read local file %s: %s", file_path, exc)
+            return None
+
     max_retries = 3
     base_delay = 1.0  # seconds
     

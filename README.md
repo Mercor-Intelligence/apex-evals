@@ -1,6 +1,6 @@
 # APEX Evals
 
-Evaluation repository for Mercor's APEX family of benchmarks.
+Evaluation repository for Mercor's APEX benchmarks.
 
 ## Overview
 

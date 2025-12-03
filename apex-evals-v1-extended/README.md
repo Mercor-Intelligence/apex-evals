@@ -1,8 +1,10 @@
-# Apex Eval Python Package
+# APEX-v1-extended
 
-Simple Python package for LLM evaluation. Generate responses from multiple LLM providers and grade them against rubrics.
+A benchmark for measuring whether frontier models can perform economically valuable work across four jobs: investment banking associate, management consultant, big law associate, and primary care physician (MD)
 
-## Install
+This Python package contains our harness to evaluate LLMs on APEX-v1. It generates responses from multiple LLM providers and grades them against the tasks.
+
+## Installation
 
 ```bash
 # Clone and navigate

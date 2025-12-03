@@ -1,0 +1,19 @@
+# APEX Evals
+
+Evaluation repository for Mercor's APEX family of benchmarks.
+
+## Overview
+
+This repository contains tools and infrastructure for evaluating large language models (LLMs) against the APEX benchmark suite. The evaluation framework supports multiple LLM providers and includes automated grading capabilities.
+
+## Getting Started
+
+The main evaluation package for APEX-v1-extended is located in [`apex-evals-v1-extended/`](./apex-evals-v1-extended/). See that [documentation](./apex-evals-v1-extended/README.md) for:
+- Installation instructions
+- Usage examples
+- API reference
+- Supported models
+
+## License
+
+MIT

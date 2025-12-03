@@ -357,4 +357,4 @@ print(f"Percentage: {grade_result.percentage_score}%")
 
 ## License
 
-MIT
+CC-by-4.0

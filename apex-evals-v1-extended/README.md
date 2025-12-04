@@ -6,7 +6,7 @@ Simple Python package for LLM evaluation. Generate responses from multiple LLM p
 
 ```bash
 # Clone and navigate
-cd apex-eval
+cd apex-evals-v1-extended
 
 # Create virtual environment
 python3 -m venv .venv
@@ -14,6 +14,9 @@ source .venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
+
+# Install package in editable mode
+pip install -e .
 ```
 
 ## Setup
@@ -224,9 +227,11 @@ The rubric should be a **list of dictionaries**, where each dictionary contains 
 - **GPT-4o Series**: `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`
 - **o-Series**: `o1-preview`, `o1-mini`, `o3`, `o3-mini`, `o3-deep-research`, `o4-mini-deep-research-2025-06-26`
 - **GPT-4/3.5**: `gpt-4`, `gpt-3.5-turbo`
-- **GPT-5**: `gpt-5` (225K context)
+- **GPT-5**: `gpt-5`
+- **GPT-5.1**: `gpt-5.1`
 
 ### Anthropic (Claude)
+- **Claude Opus 4.5**: `claude-opus-4-5-20251101`,
 - **Claude 4**: `claude-4`, `claude-4-sonnet-20250722`, `claude-4-haiku-20250722`, `claude-4-opus-20250722`
 - **Claude Opus 4**: `claude-opus-4-1-20250805`, `claude-opus-4-20250514`
 - **Claude Sonnet 4**: `claude-sonnet-4-20250514`, `claude-sonnet-4-5-20250929`
@@ -244,11 +249,6 @@ The rubric should be a **list of dictionaries**, where each dictionary contains 
 - **Grok 4**: `grok-4-0709`, `grok-code-fast-1` (256K context)
 - **Grok 3**: `grok-3`, `grok-3-mini`, `grok-3-mini-beta` (131K context)
 - **Grok Beta**: `grok-beta` (131K context)
-
-### Fireworks AI
-- **Qwen**: `qwen3-30b-a3b-thinking-2507`, `qwen3-235b-a22b-thinking-2507`
-- **LLaMA**: `llama4-scout-instruct-basic`, `llama4-maverick-instruct-basic` (128K context)
-- **DeepSeek**: `deepseek-v3p1`, `deepseek-v3p1-terminus`, `deepseek-r1-0528` (64K context)
 
 ## Examples
 

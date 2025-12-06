@@ -4,15 +4,37 @@ A benchmark for measuring whether frontier models can perform economically valua
 
 This Python package contains our harness to evaluate LLMs on APEX-v1. It generates responses from multiple LLM providers and grades them against the tasks.
 
+## Quickstart: run the APEX-v1-extended evals
+
+Use this if you just want to run the benchmark end-to-end with Hugging Face data.
+
+1. **Clone and enter this repo**
+   - `git clone https://github.com/Mercor-Intelligence/apex-evals`
+   - `cd apex-evals-v1-extended`
+2. **Create and activate a virtual environment**
+   - `python3 -m venv venv`
+   - `source venv/bin/activate`
+3. **Install dependencies**
+   - `pip install -r requirements.txt`
+   - `pip install -e .`
+4. **Get the APEX-v1-extended dataset**
+   - `git clone https://huggingface.co/datasets/mercor/APEX-v1-extended`
+5. **Create your `.env`**
+   - `cp example.env .env` and fill in your API keys.
+6. **Run the benchmark**
+   - `python examples/run_with_hf.py --input_dir /full/path/to/APEX-v1-extended --output apex_results.csv --start_index 0 --limit 5`
+
 ## Installation
+
+All commands below assume you are in the root of this repo.
 
 ```bash
 # Clone and navigate
 cd apex-evals-v1-extended
 
 # Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv venv
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -23,7 +45,8 @@ pip install -e .
 
 ## Setup
 
-Create `.env` file with your API keys:
+The library expects your LLM and (optionally) document parsing API keys to be available via environment variables.
+The simplest way to do this in local development is to create a `.env` file in the project root:
 
 ```bash
 # LLM Providers
@@ -130,6 +153,7 @@ print(f"Percentage: {result.percentage_score}%")
 | `api_key` | str | No | None | Override API key for this model |
 | `is_custom_model` | bool | No | False | Whether this is a custom model |
 | `custom_model_config` | dict | No | None | Custom model configuration |
+| `model_configs` | dict | No | None | Model specific configs |
 
 ### Attachment
 
@@ -340,7 +364,7 @@ print(f"Percentage: {grade_result.percentage_score}%")
 ## Troubleshooting
 
 **"Module not found"**
-- Make sure virtual environment is activated: `source .venv/bin/activate`
+- Make sure virtual environment is activated: `source venv/bin/activate`
 - Reinstall: `pip install -r requirements.txt`
 
 **"API key not found"**

@@ -14,9 +14,8 @@ from .config import GradingResult, GradingTask
 
 logger = logging.getLogger(__name__)
 
-# Load default grading prompt
-PROMPT_DIR = Path(__file__).parent.parent.parent / "prompts"
-DEFAULT_GRADING_PROMPT_PATH = PROMPT_DIR / "grading_prompt.txt"
+
+DEFAULT_GRADING_PROMPT_PATH = Path("prompt/grading_prompt.txt")
 
 if DEFAULT_GRADING_PROMPT_PATH.exists():
     DEFAULT_GRADING_PROMPT = DEFAULT_GRADING_PROMPT_PATH.read_text()
@@ -26,23 +25,7 @@ else:
 
 def parse_llm_json_response(content: str) -> Dict[str, Any]:
     """
-    Parse JSON from LLM response with multiple fallback strategies.
-
-    Handles:
-    - Markdown code blocks (```json ... ```)
-    - Multi-line JSON
-    - Nested JSON structures
-    - Partial/corrupted JSON
-    - Multiple JSON blocks (finds the one with "result" field)
-
-    Args:
-        content: Raw LLM response content
-
-    Returns:
-        Parsed JSON dictionary containing "result" field
-
-    Raises:
-        SystemExecutionError: If JSON cannot be parsed by any strategy
+    Parse JSON from LLM response.
     """
     content_cleaned = content.strip()
     if content_cleaned.startswith('```'):

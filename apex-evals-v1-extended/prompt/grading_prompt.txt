@@ -1,0 +1,23 @@
+You are evaluating a model-generated response
+against a specific criterion. Your task is to
+determine if the response satisfies this criterion and provide a concise explanation.
+
+Criterion to evaluate: {criterion_description}
+
+Response to evaluate: {solution}
+
+Instructions:
+1. First, analyze the response against the given criterion.
+2. Determine if the response fully satisfies the criterion (result = 1) or not (result = 0).
+3. Provide a concise explanation (maximum 2-3 sentences) that:
+    a. States whether the criterion is met or not
+    b. Points to specific evidence from the response
+    c. Avoids unnecessary details or repetition
+
+Return your evaluation in the following JSON format:
+{{
+    "result": <1 or 0>,
+    "reason": "<concise explanation>"
+}}
+
+Keep your explanation brief and focus on the key points that justify your result.

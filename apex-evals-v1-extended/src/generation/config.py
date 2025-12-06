@@ -20,6 +20,7 @@ class ModelConfig(BaseModel):
     use_tools: bool = Field(default=False, description="Enable tools")
     is_custom_model: bool = Field(default=False, description="Is custom model")
     custom_model_config: Optional[Dict[str, Any]] = Field(default=None, description="Custom config")
+    model_configs: Optional[Dict[str, Any]] = Field(default=None, description="Additional model params (e.g. reasoning_effort)")
     enable_thinking: Optional[bool] = Field(default=None, description="Enable thinking")
     thinking_tokens: Optional[int] = Field(default=None, description="Thinking budget")
     api_key: Optional[str] = Field(default=None, description="API key")

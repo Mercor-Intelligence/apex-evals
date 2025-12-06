@@ -1,8 +1,10 @@
-You are evaluating a model-generated response against a specific criterion. Your task is to determine if the response satisfies this criterion and provide a concise explanation.
+You are evaluating a model-generated response
+against a specific criterion. Your task is to
+determine if the response satisfies this criterion and provide a concise explanation.
 
 Criterion to evaluate: {criterion_description}
 
-Response to evaluate: {solution}
+Response to evaluate: {model_response}
 
 Instructions:
 1. First, analyze the response against the given criterion.

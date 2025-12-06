@@ -141,7 +141,7 @@ class ReductoParser(BaseParser):
             )
             return ""
         except Exception as exc:
-            logger.warning("Error extracting text from Reducto result: %s", exc)
+            logger.error("Reducto error - Failed to extract text from result: %s", exc)
             return ""
 
     def _text_from_chunks(self, chunks: Optional[Sequence[Dict[str, Any]]]) -> str:
@@ -167,17 +167,17 @@ class ReductoParser(BaseParser):
             with urllib_request.urlopen(url, timeout=30) as response:
                 raw = response.read().decode("utf-8")
         except Exception as exc:
-            logger.warning("Failed to download Reducto output: %s", exc)
+            logger.error("Reducto error - Failed to download output from URL: %s", exc)
             return ""
 
         try:
             payload = json.loads(raw)
         except json.JSONDecodeError as exc:
-            logger.warning("Invalid JSON from Reducto output: %s", exc)
+            logger.error("Reducto error - Invalid JSON in response: %s", exc)
             return ""
 
         if not isinstance(payload, dict):
-            logger.warning("Unexpected payload type from Reducto URL: %s", type(payload))
+            logger.error("Reducto error - Unexpected payload type (expected dict, got %s)", type(payload).__name__)
             return ""
 
         chunk_text = self._text_from_chunks(payload.get("chunks"))
@@ -197,7 +197,7 @@ class ReductoParser(BaseParser):
                     )
                     return text_value
 
-        logger.warning("No extractable content found in Reducto URL response: %s", payload)
+        logger.error("Reducto error - No extractable content found in response. Keys: %s", list(payload.keys()))
         return ""
 
     async def parse(
@@ -248,33 +248,41 @@ class ReductoParser(BaseParser):
 
             def _sync_reducto_parse() -> Optional[str]:
                 try:
-                    with open(temp_file.name, "rb") as handle:
-                        upload_result = self.client.upload(file=handle)
-                        upload_id = getattr(upload_result, "file_id", None)
-                        logger.debug("Uploaded file: %s", upload_id)
+                    logger.info("Reducto: Uploading %s (%d bytes)...", filename, len(content))
+                    try:
+                        with open(temp_file.name, "rb") as handle:
+                            upload_result = self.client.upload(file=handle)
+                            upload_id = getattr(upload_result, "file_id", None)
+                    except Exception as upload_exc:
+                        logger.error("Reducto error - Upload failed for %s: %s", filename, upload_exc)
+                        raise
+                    
+                    logger.info("Reducto: Upload complete for %s (file_id: %s)", filename, upload_id)
 
                     if not upload_id:
                         raise RuntimeError("Reducto upload did not return file_id")
 
-                    result = self.client.parse.run(input=upload_id, **parse_kwargs)
+                    logger.info("Reducto: Parsing %s...", filename)
+                    try:
+                        result = self.client.parse.run(input=upload_id, **parse_kwargs)
+                    except Exception as parse_exc:
+                        logger.error("Reducto error - Parse API call failed for %s: %s", filename, parse_exc)
+                        raise
+                    
+                    logger.info("Reducto: Parse complete for %s, extracting text...", filename)
                     extracted_text = self._extract_text_from_result(result)
 
                     if not extracted_text or not extracted_text.strip():
-                        logger.warning("Reducto returned empty result for %s", filename)
-                        logger.debug("Result type: %s", type(result))
-                        logger.debug(
-                            "Result attributes: %s",
-                            [attr for attr in dir(result) if not attr.startswith("_")],
-                        )
+                        logger.error("Reducto error - Empty result returned for %s", filename)
 
                     return extracted_text
                 except Exception as exc:
                     error_str = str(exc)
                     if "Invalid access token" in error_str or "401" in error_str:
-                        logger.error("Reducto authentication failed: %s", exc)
+                        logger.error("Reducto error - Authentication failed: %s", exc)
                         raise exc
                     
-                    logger.warning("Reducto parsing failed for %s: %s", filename, exc)
+                    logger.error("Reducto error - Parsing failed for %s: %s", filename, exc)
                     return None
 
             text = await asyncio.to_thread(_sync_reducto_parse)

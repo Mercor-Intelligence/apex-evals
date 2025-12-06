@@ -11,6 +11,7 @@ from errors import UserInputError
 from handler.validator import ConfigValidator
 
 from .config import Attachment, GenerationResult, GenerationTask, ModelConfig
+from call_llm import LLMMessage, LLMRequest, LLMRole, create_litellm_client
 
 if TYPE_CHECKING:
     from call_llm.base import LLMResponse
@@ -184,35 +185,6 @@ async def execute_single_llm_call(
     """Executes single LLM call with retries."""
     start_time = time.time()
     started_at_iso = datetime.fromtimestamp(start_time).isoformat()
-
-    try:
-        from call_llm import (
-            LLMMessage,
-            LLMRequest,
-            LLMRole,
-            create_litellm_client,
-        )
-    except ImportError as exc:
-        raise UserInputError(
-            title="call_llm module not found",
-            summary=(
-                "The call_llm package could not be imported. "
-                "This usually happens when scripts are executed outside the apex-eval root."
-            ),
-            context={
-                "working_dir": str(Path.cwd()),
-                "pythonpath": list(sys.path)[:5],
-            },
-            probable_causes=[
-                "You are running a script from a different directory without updating PYTHONPATH.",
-                "The apex-eval/src folder is not on sys.path.",
-            ],
-            next_steps=[
-                "Run commands from the apex-eval directory or install apex-eval in editable mode.",
-                "Ensure `sys.path.insert(0, '<repo>/apex-eval/src')` is executed before importing.",
-            ],
-            tips=["`pip install -e .` inside apex-eval adds call_llm to your environment automatically."],
-        ) from exc
 
     try:
         logger.debug(f"Final prompt ready for {model_id}/run{run_number}: {len(final_prompt)} chars")

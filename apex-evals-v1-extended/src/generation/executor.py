@@ -177,6 +177,7 @@ async def execute_single_llm_call(
     api_key: Optional[str] = None,
     is_custom_model: bool = False,
     custom_model_config: Optional[Dict[str, Any]] = None,
+    model_configs: Optional[Dict[str, Any]] = None,
     enable_thinking: Optional[bool] = None,
     thinking_tokens: Optional[int] = None,
 ) -> Dict[str, Any]:
@@ -230,6 +231,7 @@ async def execute_single_llm_call(
             api_key=api_key,
             is_custom_model=is_custom_model,
             custom_model_config=custom_model_config,
+            model_configs=model_configs,
             enable_thinking=enable_thinking,
             thinking_tokens=thinking_tokens,
         )
@@ -341,6 +343,7 @@ async def _execute_model_runs(
                 api_key=model_config.api_key,
                 is_custom_model=model_config.is_custom_model,
                 custom_model_config=model_config.custom_model_config,
+                model_configs=model_config.model_configs,
                 enable_thinking=model_config.enable_thinking,
                 thinking_tokens=model_config.thinking_tokens,
             )

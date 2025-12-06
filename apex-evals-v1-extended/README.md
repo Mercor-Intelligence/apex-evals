@@ -4,15 +4,41 @@ A benchmark for measuring whether frontier models can perform economically valua
 
 This Python package contains our harness to evaluate LLMs on APEX-v1. It generates responses from multiple LLM providers and grades them against the tasks.
 
+## Quickstart: run the APEX-v1-extended evals
+
+Run the benchmark with the `examples/run_with_hf.py` script, follow these steps:
+
+1. **Clone and enter this repo**
+   - `git clone https://github.com/Mercor-Intelligence/apex-evals`
+   - `cd apex-evals-v1-extended`
+2. **Create and activate a virtual environment**
+   - `python3 -m venv venv`
+   - `source venv/bin/activate`
+3. **Install dependencies**
+   - `pip install -r requirements.txt`
+   - `pip install -e .`
+4. **Download the APEX-v1-extended dataset**
+   - Recommended: `git clone https://huggingface.co/datasets/mercor/APEX-v1-extended`
+   - After this you should have an `APEX-v1-extended/` folder that contains `data/train.csv`.
+5. **Configure your API keys**
+   - Create a `.env` file in this repo and add your LLM provider keys (see **Setup** below).
+6. **Run the evaluation script**
+   - Example:
+     - `python examples/run_with_hf.py --input_dir /path/to/APEX-v1-extended --output apex_results.csv --start_index 0 --limit 5`
+
+This will generate responses for a subset of tasks and write everything into `apex_results.csv`.
+
 ## Installation
+
+All commands below assume you are in the root of this repo.
 
 ```bash
 # Clone and navigate
 cd apex-evals-v1-extended
 
 # Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv venv
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -23,7 +49,8 @@ pip install -e .
 
 ## Setup
 
-Create `.env` file with your API keys:
+The library expects your LLM and (optionally) document parsing API keys to be available via environment variables.
+The simplest way to do this in local development is to create a `.env` file in the project root:
 
 ```bash
 # LLM Providers
@@ -99,6 +126,61 @@ print(f"Score: {result.points_earned}/{result.points_possible}")
 print(f"Percentage: {result.percentage_score}%")
 ```
 
+### 3. Run APEX-v1-extended benchmark with Hugging Face data
+
+If you want to run the full APEX-v1-extended benchmark using the official dataset on Hugging Face, you can use the `examples/run_with_hf.py` script.
+This script reads tasks from `data/train.csv`, calls multiple models, grades the responses, and writes everything into a single CSV.
+
+**1. Clone the dataset repository (recommended)**
+
+From the root of this project, make sure `git-xet` is installed and then clone the dataset:
+
+```bash
+brew install git-xet
+git xet install
+
+# Clone the dataset repository (this pulls the large files as well)
+git clone https://huggingface.co/datasets/mercor/APEX-v1-extended
+
+```
+
+After this, you should have an `APEX-v1-extended/` folder that contains `data/train.csv`.
+
+**2. (Alternative) Download via Hugging Face CLI**
+
+If you prefer to use the Hugging Face CLI instead of `git clone`:
+
+```bash
+# Install the hf CLI if you don't have it yet
+curl -LsSf https://hf.co/cli/install.sh | bash
+
+# Download the dataset locally
+hf download mercor/APEX-v1-extended --repo-type=dataset
+```
+
+This will create a local copy of the dataset files (including `data/train.csv`) in your working directory.
+
+**3. Run the evaluation script**
+
+With your virtual environment activated and the package installed (see Installation above), you can run the evaluation script:
+
+```bash
+source venv/bin/activate  # only if not already active
+
+python examples/run_with_hf.py \
+  --input_dir /path/to/APEX-v1-extended \
+  --output apex_results.csv \
+  --start_index 0 \
+  --limit 5
+```
+
+- **`--input_dir`**: path to the local `APEX-v1-extended` dataset folder (the one that contains `data/train.csv`).
+- **`--output`**: CSV file where results will be written.
+- **`--start_index` / `--limit`**: let you run a subset of tasks for quicker debugging.
+- **`--domain`** (optional): filter tasks by domain. Valid options are `Consulting`, `Finance`, `Legal`, `Medicine`.
+
+The script will iterate over tasks in `train.csv`, generate answers with multiple models, grade the responses, and append a row per task to the output CSV.
+
 ## Configuration
 
 ### GenerationTask
@@ -130,6 +212,7 @@ print(f"Percentage: {result.percentage_score}%")
 | `api_key` | str | No | None | Override API key for this model |
 | `is_custom_model` | bool | No | False | Whether this is a custom model |
 | `custom_model_config` | dict | No | None | Custom model configuration |
+| `model_configs` | dict | No | None | Model specific configs |
 
 ### Attachment
 

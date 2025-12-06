@@ -4,7 +4,7 @@ determine if the response satisfies this criterion and provide a concise explana
 
 Criterion to evaluate: {criterion_description}
 
-Response to evaluate: {model_response}
+Response to evaluate: {solution}
 
 Instructions:
 1. First, analyze the response against the given criterion.

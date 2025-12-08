@@ -250,7 +250,7 @@ def calculate_stats(output_file: str):
 
 async def main():
     parser = argparse.ArgumentParser(description="Run APEX evaluations")
-    parser.add_argument("--input_dir", default="/Users/kanishkasahu/Documents/benchmark-framework/apex/apex-evals/APEX-v1-extended")
+    parser.add_argument("--input_dir", required=True)
     parser.add_argument("--output", default="apex_results.csv")
     parser.add_argument("--start_index", type=int, default=0)
     parser.add_argument("--limit", type=int, default=None)

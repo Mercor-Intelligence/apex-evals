@@ -1,4 +1,4 @@
-Criterion ID,Task ID,Prompt,Specified Prompt (where available),Workflow,Hurdle Tag,Criteria type,Criterion Grounding Check,Description
+Criterion ID,Task ID,Prompt,Specified Prompt,Workflow,Hurdle Tag,Criteria type,Criterion Grounding Check,Description
 872,4,"Persona: I am a first time homeowner. I am 35. I live in a suburb of Portland, Oregon.
 
 Prompt: Two weeks ago I moved into a house built in 1993 and the first thing I noticed was that the light bulbs were awful. Whoever lived here before me just put whatever random bulb in every fixture. So I have gone through the whole house and replaced literally every light bulb in every fixture. I am happy with their quality now, and they all worked fine last night when I installed them. I walked around turning them all on and off, it was great! But after I slept overnight, there is a problem: in the upstairs bathroom, the lights don't turn on at all. I flip the switch and nothing happens! I just replaced six lightbulbs in there, so I am confused. There are two outlets in the bathroom but neither of them has a GFCI, so I don't think that's the problem.

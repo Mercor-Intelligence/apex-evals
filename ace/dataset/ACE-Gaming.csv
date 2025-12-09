@@ -1,4 +1,4 @@
-Criterion ID,Task ID,Prompt,Specified Prompt (where available),Workflow,Hurdle Tag,Criteria type,Criterion Grounding Check,Description
+Criterion ID,Task ID,Prompt,Specified Prompt,Workflow,Hurdle Tag,Criteria type,Criterion Grounding Check,Description
 6072,276,"Persona: I'm designing a 4-player couch co-op game with side scrolling. The camera focuses on player 1, but sometimes when other players fall behind, they don't appear on screen. 
 
 Prompt: I don't want to forcibly move any player's location. Please provide 3 solutions to keep all players constantly displayed on the screen, along with the names of games that use those mechanisms.","Persona: I'm designing a 4-player couch co-op game with side scrolling. The camera focuses on player 1, but sometimes when other players fall behind, they don't appear on screen. 

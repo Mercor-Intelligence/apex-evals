@@ -15,18 +15,20 @@ import sys
 from pathlib import Path
 from collections import defaultdict
 
-# Add configs to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'configs'))
+# Add project root to path FIRST
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir)
+sys.path.insert(0, project_root)
 
-from config import config
-from model_providers import MODEL_REGISTRY, get_provider_for_model
+from configs.config import config
+from configs.model_providers import MODEL_REGISTRY, get_provider_for_model
 
 # Constants
 ALL_MODELS = list(MODEL_REGISTRY.keys())
 ALL_DOMAINS = ['Shopping', 'Gaming', 'Food', 'DIY']
-RESULTS_DIR = 'results'
-DATASET_DIR = 'dataset'
-OUTPUT_DIR = 'exported_results-os'
+RESULTS_DIR = os.path.join(project_root, 'results')
+DATASET_DIR = os.path.join(project_root, 'dataset')
+OUTPUT_DIR = os.path.join(project_root, 'exported_results')
 
 
 def load_workflows_from_dataset(domain):
@@ -43,7 +45,7 @@ def load_workflows_from_dataset(domain):
     workflows = {}
     
     if not os.path.exists(dataset_file):
-        print(f"  ⚠️  Dataset file not found: {dataset_file}")
+        print(f"  [!] Dataset file not found: {dataset_file}")
         return workflows
     
     try:
@@ -64,7 +66,7 @@ def load_workflows_from_dataset(domain):
         return unique_workflows
     
     except Exception as e:
-        print(f"  ⚠️  Error loading workflows from {dataset_file}: {e}")
+        print(f"  [!] Error loading workflows from {dataset_file}: {e}")
         return {}
 
 
@@ -273,13 +275,13 @@ def export_domain(domain):
     # Load workflows from dataset
     print(f"Loading workflows from dataset...")
     workflows = load_workflows_from_dataset(domain)
-    print(f"  ✓ Loaded {len(workflows)} unique task workflows")
+    print(f"  [+] Loaded {len(workflows)} unique task workflows")
     
     # Get all task IDs
     task_ids = get_all_task_ids_for_domain(domain)
     
     if not task_ids:
-        print(f"  ⚠️  No tasks found in results for {domain}")
+        print(f"  [!] No tasks found in results for {domain}")
         return False
     
     print(f"  Found {len(task_ids)} tasks")
@@ -338,11 +340,11 @@ def export_domain(domain):
             task_rows.append(row)
         
         all_rows.extend(task_rows)
-        print(f"✅ ({len(task_rows)} models)")
+        print(f"[+] ({len(task_rows)} models)")
     
     # Write to CSV with proper formatting
     if all_rows:
-        output_file = os.path.join(OUTPUT_DIR, f"{domain}_all_tasks_local.csv")
+        output_file = os.path.join(OUTPUT_DIR, f"{domain}_results.csv")
         
         with open(output_file, 'w', newline='', encoding='utf-8-sig') as csvfile:  # utf-8-sig adds BOM
             writer = csv.DictWriter(
@@ -356,11 +358,11 @@ def export_domain(domain):
             writer.writerows(all_rows)
         
         file_size = os.path.getsize(output_file)
-        print(f"\n  ✅ Wrote {len(all_rows)} rows to {output_file}")
+        print(f"\n  [+] Wrote {len(all_rows)} rows to {output_file}")
         print(f"     File size: {file_size:,} bytes ({file_size / (1024*1024):.2f} MB)")
         return True
     else:
-        print(f"  ⚠️  No data to export for {domain}")
+        print(f"  [!] No data to export for {domain}")
         return False
 
 
@@ -391,7 +393,7 @@ def main():
         domains_to_export = args.domains
     
     print("="*80)
-    print("EXPORT RESULTS TO CLEAN CSV FILES")
+    print("EXPORT RESULTS TO CSV FILES")
     print("="*80)
     print(f"Source directory: {RESULTS_DIR}")
     print(f"Output directory: {OUTPUT_DIR}")
@@ -411,18 +413,18 @@ def main():
     
     # Summary
     print("\n" + "="*80)
-    print("✅ EXPORT COMPLETE")
+    print("[+] EXPORT COMPLETE")
     print("="*80)
     print(f"Successfully exported: {success_count}/{len(domains_to_export)} domains")
     print(f"\nOutput files in {OUTPUT_DIR}/:")
     
     for domain in domains_to_export:
-        filename = os.path.join(OUTPUT_DIR, f"{domain}_all_tasks_local.csv")
+        filename = os.path.join(OUTPUT_DIR, f"{domain}_results.csv")
         if os.path.exists(filename):
             file_size = os.path.getsize(filename)
-            print(f"  ✅ {domain}_all_tasks_local.csv ({file_size:,} bytes)")
+            print(f"  [+] {domain}_results.csv ({file_size:,} bytes)")
         else:
-            print(f"  ❌ {domain}_all_tasks_local.csv (not created)")
+            print(f"  [-] {domain}_results.csv (not created)")
     
     print("="*80)
 

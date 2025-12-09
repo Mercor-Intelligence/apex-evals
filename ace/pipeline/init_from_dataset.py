@@ -132,7 +132,7 @@ def insert_criteria_to_table(criteria, domain, model, overwrite=False, dry_run=F
                 "Criterion Grounding Check": row.get('Criterion Grounding Check', ''),
                 "Hurdle Tag": row.get('Hurdle Tag', ''),
                 f"Criterion Type ({domain})": row.get('Criteria type', ''),  # CSV has unified name, Supabase has domain-specific
-                "Specified Prompt": row.get('Specified Prompt (where available)') or row.get('Specified Prompt', ''),
+                "Specified Prompt": row.get('Specified Prompt', ''),
                 "Workflow": row.get('Workflow', '')
             }
 
@@ -186,8 +186,8 @@ def create_test_case_json_files(criteria, domain, model, runs=[1,2,3,4,5,6,7,8])
 
         # Set task-level data (same for all criteria in a task)
         if not tasks_data[task_id]['prompt']:
-            tasks_data[task_id]['prompt'] = row.get('Specified Prompt (where available)') or row.get('Specified Prompt') or row.get('Prompt', '')
-            tasks_data[task_id]['specified_prompt'] = row.get('Specified Prompt (where available)') or row.get('Specified Prompt', '')
+            tasks_data[task_id]['prompt'] = row.get('Specified Prompt') or row.get('Prompt', '')
+            tasks_data[task_id]['specified_prompt'] = row.get('Specified Prompt', '')
             tasks_data[task_id]['workflow'] = row.get('Workflow', '')
             # Extract Shop vs. Product for Shopping domain only
             if domain == 'Shopping':
@@ -267,7 +267,7 @@ def insert_tasks_to_table(criteria, domain, model, overwrite=False, dry_run=Fals
         if task_id not in tasks:
             tasks[task_id] = {
                 'prompt': row.get('Prompt', ''),
-                'specified_prompt': row.get('Specified Prompt (where available)') or row.get('Specified Prompt', ''),
+                'specified_prompt': row.get('Specified Prompt', ''),
                 'workflow': row.get('Workflow', '')
             }
             # Add shop_vs_product only for Shopping domain

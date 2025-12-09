@@ -80,7 +80,7 @@ shop_vs_product = test_case.get('shop_vs_product')  # Shopping domain only
 
 try:
     provider_name = get_provider_for_model(model_name)
-    print(f"🚀 Making grounded call using {model_name} ({provider_name})...\n")
+    print(f"[*] Making grounded call using {model_name} ({provider_name})...\n")
 except ValueError as e:
     print(f"❌ Error: {e}")
     sys.exit(1)
@@ -90,11 +90,20 @@ print(f"Query (using Specified Prompt): {query[:200]}...\n")
 
 # Get provider instance
 print(f"Initializing {provider_name} provider...")
-provider = get_provider_instance(model_name)
+try:
+    provider = get_provider_instance(model_name)
+except ValueError as e:
+    # Print to stderr so runner.py can capture it
+    print(f"ERROR: {e}", file=sys.stderr)
+    sys.exit(1)
 
 # Make the API call
 print(f"Making API call to {model_name}...")
-raw_response = provider.make_api_call(query, model_name)
+try:
+    raw_response = provider.make_api_call(query, model_name)
+except Exception as e:
+    print(f"ERROR: API call failed: {e}", file=sys.stderr)
+    sys.exit(1)
 
 # Parse to normalized format
 print(f"Parsing response to normalized format...")
@@ -141,4 +150,4 @@ print(f"\n✅ Found {api_source_count} API grounding sources")
 print(f"✅ Found {len(grounding_json.get('groundingSupports', []))} citations")
 if criteria:
     print(f"✅ Included {len(criteria)} criteria for autograding")
-print(f"\n🚀 Next: python3 harness/grounding-pipeline.py {output_file}")
+print(f"\n[*] Next: python3 harness/grounding-pipeline.py {output_file}")

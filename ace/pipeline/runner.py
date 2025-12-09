@@ -532,7 +532,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Batch pipeline using ORIGINAL scripts')
     parser.add_argument('domain', choices=['Shopping', 'Gaming', 'Food', 'DIY'])
-    parser.add_argument('--model', required=True, help='Model name (e.g. gpt-5, gemini-2.5-pro, claude-3.5-sonnet)')
+    parser.add_argument('--model', nargs='+', required=True, help='Model name(s) - can specify multiple (e.g. --model gemini-2.5-pro gemini-2.5-flash)')
     parser.add_argument('--workers', type=int, default=10)
     parser.add_argument('--run', type=int, choices=[1, 2, 3, 4, 5, 6, 7, 8], required=True)
     parser.add_argument('--skip-autograder', action='store_true', help='Skip autograder (only run grounding + scraping)')
@@ -540,7 +540,7 @@ def main():
     parser.add_argument('--supabase', action='store_true', help='Enable Supabase (default: local files only)')
 
     args = parser.parse_args()
-    model_name = args.model
+    models = args.model  # Now a list
 
     # Enable Supabase if flag is set and credentials available
     if args.supabase:
@@ -549,91 +549,107 @@ def main():
             USE_SUPABASE = True
             supabase = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
             logger.info("--supabase flag: Enabling Supabase writes")
-            
-            # Validate Supabase connection and data
-            try:
-                domain_config = get_domain_config_for_model(args.domain, args.model)
-                criteria_table = domain_config['criteria_table']
-                
-                # Test connection by querying the criteria table
-                test_result = supabase.table(criteria_table).select('"Task ID"').limit(1).execute()
-                
-                if not test_result.data:
-                    logger.error(f"Supabase table '{criteria_table}' is empty!")
-                    logger.error(f"Run 'python3 pipeline/init_from_dataset.py {args.domain} {args.model} --supabase' first")
-                    return
-                
-                logger.info(f"Supabase connection verified (table: {criteria_table})")
-            except Exception as e:
-                logger.error(f"Supabase validation failed: {e}")
-                logger.error("Check your SUPABASE_URL and SUPABASE_KEY in .env")
-                return
         else:
             logger.warning("--supabase flag set but Supabase not available (missing credentials or package)")
 
-    # Get provider from model (for display)
-    try:
+    # Validate all models first
+    for model_name in models:
+        try:
+            get_provider_for_model(model_name)
+        except ValueError as e:
+            logger.error(f"Error: {e}")
+            return
+
+    # Process each model
+    all_results = {}
+    for model_name in models:
         provider_name = get_provider_for_model(model_name)
-    except ValueError as e:
-        logger.error(f"Error: {e}")
-        return
 
-    logger.info("BATCH PIPELINE (Using ORIGINAL Scripts)")
-    logger.info(f"Domain: {args.domain}")
-    logger.info(f"Model: {model_name}")
-    logger.info(f"Provider: {provider_name}")
-    logger.info(f"Run Number: {args.run}")
-    logger.info(f"Workers: {args.workers}")
-    if args.skip_autograder:
-        logger.info("Mode: SKIP AUTOGRADER (grounding + scraping only)")
-    if args.force:
-        logger.warning("FORCE MODE: Re-running ALL tasks (will overwrite existing data)")
+        # Validate Supabase table if enabled
+        if USE_SUPABASE:
+            try:
+                domain_config = get_domain_config_for_model(args.domain, model_name)
+                criteria_table = domain_config['criteria_table']
+                test_result = supabase.table(criteria_table).select('"Task ID"').limit(1).execute()
+                if not test_result.data:
+                    logger.error(f"Supabase table '{criteria_table}' is empty!")
+                    logger.error(f"Run 'python3 pipeline/init_from_dataset.py {args.domain} {model_name} --supabase' first")
+                    continue
+            except Exception as e:
+                logger.error(f"Supabase validation failed for {model_name}: {e}")
+                continue
 
-    # Get pending tasks
-    pending = get_pending_tasks(args.domain, model_name, args.run, force=args.force, skip_grading=args.skip_autograder)
+        logger.info("=" * 60)
+        logger.info(f"BATCH PIPELINE: {model_name}")
+        logger.info("=" * 60)
+        logger.info(f"Domain: {args.domain}")
+        logger.info(f"Model: {model_name} ({provider_name})")
+        logger.info(f"Run Number: {args.run}")
+        logger.info(f"Workers: {args.workers}")
+        if args.skip_autograder:
+            logger.info("Mode: SKIP AUTOGRADER (grounding + scraping only)")
+        if args.force:
+            logger.warning("FORCE MODE: Re-running ALL tasks (will overwrite existing data)")
 
-    if not pending:
-        logger.info("No pending tasks!")
-        return
+        # Get pending tasks
+        pending = get_pending_tasks(args.domain, model_name, args.run, force=args.force, skip_grading=args.skip_autograder)
 
-    logger.info(f"Processing {len(pending)} tasks...")
+        if not pending:
+            logger.info(f"No pending tasks for {model_name}!")
+            all_results[model_name] = {'success': 0, 'failed': 0, 'time': 0}
+            continue
 
-    # Process in parallel
-    start_time = time.time()
-    results = []
+        logger.info(f"Processing {len(pending)} tasks...")
 
-    with ThreadPoolExecutor(max_workers=args.workers) as executor:
-        futures = {
-            executor.submit(
-                process_single_task_with_original_scripts,
-                task_id,
-                args.domain,
-                model_name,
-                args.run,
-                args.skip_autograder
-            ): task_id
-            for task_id in pending
-        }
+        # Process in parallel
+        start_time = time.time()
+        results = []
 
-        for future in as_completed(futures):
-            result = future.result()
-            results.append(result)
+        with ThreadPoolExecutor(max_workers=args.workers) as executor:
+            futures = {
+                executor.submit(
+                    process_single_task_with_original_scripts,
+                    task_id,
+                    args.domain,
+                    model_name,
+                    args.run,
+                    args.skip_autograder
+                ): task_id
+                for task_id in pending
+            }
 
-    # Summary
-    elapsed = time.time() - start_time
-    success_count = sum(1 for r in results if r['success'])
+            for future in as_completed(futures):
+                result = future.result()
+                results.append(result)
 
-    logger.info("BATCH COMPLETE")
-    logger.info(f"Success: {success_count}/{len(results)}")
-    logger.info(f"Failed: {len(results) - success_count}/{len(results)}")
-    logger.info(f"Time: {elapsed:.1f}s ({elapsed/len(results):.1f}s per task)")
+        # Summary for this model
+        elapsed = time.time() - start_time
+        success_count = sum(1 for r in results if r['success'])
 
-    # Show failures
-    failures = [r for r in results if not r['success']]
-    if failures:
-        logger.error("Failed tasks:")
-        for f in failures[:20]:
-            logger.error(f"  - Task {f['task_id']}: {f.get('error', 'Unknown')}")
+        logger.info(f"BATCH COMPLETE for {model_name}")
+        logger.info(f"Success: {success_count}/{len(results)}")
+        logger.info(f"Failed: {len(results) - success_count}/{len(results)}")
+        logger.info(f"Time: {elapsed:.1f}s ({elapsed/len(results):.1f}s per task)")
+
+        all_results[model_name] = {'success': success_count, 'failed': len(results) - success_count, 'time': elapsed}
+
+        # Show failures
+        failures = [r for r in results if not r['success']]
+        if failures:
+            logger.error("Failed tasks:")
+            for f in failures[:10]:
+                logger.error(f"  - Task {f['task_id']}: {f.get('error', 'Unknown')}")
+            if len(failures) > 10:
+                logger.error(f"  ... and {len(failures) - 10} more")
+
+    # Final summary for multiple models
+    if len(models) > 1:
+        logger.info("=" * 60)
+        logger.info("FINAL SUMMARY (All Models)")
+        logger.info("=" * 60)
+        for model_name, stats in all_results.items():
+            total = stats['success'] + stats['failed']
+            logger.info(f"  {model_name}: {stats['success']}/{total} succeeded ({stats['time']:.1f}s)")
 
 
 if __name__ == '__main__':

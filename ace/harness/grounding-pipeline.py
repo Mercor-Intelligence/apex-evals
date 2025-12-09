@@ -624,7 +624,7 @@ class GroundingProcessor:
 
     def __init__(self):
         # Always use Firecrawl for scraping
-            print('🔥 Using Firecrawl for scraping\n')
+            print('[*] Using Firecrawl for scraping\n')
             self.firecrawl = FirecrawlApp(api_key=FIRECRAWL_API_KEY)
 
     def parse_json_file(self, file_path):
@@ -969,7 +969,7 @@ class GroundingProcessor:
         import time
         pipeline_start = time.time()
 
-        print('🚀 Starting Grounding Pipeline\n')
+        print('[*] Starting Grounding Pipeline\n')
         print('=' * 60 + '\n')
 
         # Parse grounding file and extract metadata

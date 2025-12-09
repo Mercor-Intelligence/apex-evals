@@ -1,4 +1,4 @@
-Criterion ID,Task ID,Prompt,Specified Prompt (where available),Workflow,Hurdle Tag,Criteria type,Criterion Grounding Check,Description,Shop vs. Product
+Criterion ID,Task ID,Prompt,Specified Prompt,Workflow,Hurdle Tag,Criteria type,Criterion Grounding Check,Description,Shop vs. Product
 13676,312,"Persona: Christmas is in 6 weeks' time, and I am going to start buying presents today. My 12-year-old son wants a mobile phone; we have refused him a phone until now. I am going to get him one as a surprise for Christmas.
 
 Prompt: I want a new smartphone phone that costs less than £58... let me know if there's a sale. I did some research and I want the phone to have 4 GB or more of RAM, 128 GB or more of internal storage, a 5,200 mAh or bigger battery, and a 32 MP or higher resolution main camera. I do not want the phone to be too big for my son, so I think the screen size should be less than 7 inches. Please recommend a phone.","Persona: Christmas is in 6 weeks' time, and I am going to start buying presents today. My 12-year-old son wants a mobile phone; we have refused him a phone until now. I am going to get him one as a surprise for Christmas.

@@ -78,7 +78,7 @@ Examples:
             print("⚠️  --supabase flag set but supabase package not installed")
             sys.exit(1)
 
-    print(f"🚀 Testing Task {args.task_id}")
+    print(f"[*] Testing Task {args.task_id}")
     print(f"Model: {args.model}")
     print(f"Run: {args.run}")
     print(f"Domain: {args.domain}")

@@ -674,7 +674,3 @@ python3 pipeline/run_all_models.py Shopping 1 --runner-flags --supabase
 - Check the `1_grounded_response.json` file for API errors
 - Review `2_scraped_sources.json` for scraping failures
 - Re-run the command to retry failed tasks automatically
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.

@@ -59,7 +59,9 @@ class LiteLLMClient(BaseLLMProvider):
             "o4-mini-deep-research-2025-06-26",
             "o3-mini",
             "o3",
-           "gpt-5.1"
+            "gpt-5.1",
+            "gpt-5.2",
+            "gpt-5.2-pro"
         ],
 
         # Anthropic models (Claude)

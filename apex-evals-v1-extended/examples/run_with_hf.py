@@ -22,21 +22,23 @@ logger = logging.getLogger(__name__)
 PROMPT_TEMPLATE = Path("prompt/response_generation_prompt.txt").read_text(encoding="utf-8")
 
 MODELS = [
-    {"model_id": "gpt-5", "model_configs": {"reasoning_effort": "high"}, "temperature": 0.7, "max_tokens": 128000, "max_input_tokens": 272000},
-    {"model_id": "gpt-5.1", "model_configs": {"reasoning_effort": "high"}, "temperature": 0.7, "max_tokens": 127997, "max_input_tokens": 272000},
-    {"model_id": "o3", "model_configs": None, "temperature": 0.7, "max_tokens": 100000, "max_input_tokens": 200000},
+    {"model_id": "gpt-5", "model_configs": {"reasoning_effort": "high" , "verbosity" : "medium"}, "max_tokens": 128000, "max_input_tokens": 272000},
+    {"model_id": "gpt-5.1", "model_configs": {"reasoning_effort": "high" , "verbosity" : "medium"}, "max_tokens": 127997, "max_input_tokens": 272000},
+    {"model_id": "gpt-5.2", "model_configs": {"reasoning_effort": "high" , "verbosity" : "medium"}, "max_tokens": 127997, "max_input_tokens": 272000},
+    {"model_id": "gpt-5.2-pro", "model_configs": {"reasoning_effort": "high" , "verbosity" : "medium"}, "max_tokens": 127997, "max_input_tokens": 272000},
+    {"model_id": "o3", "model_configs": {"reasoning_effort": "high" }, "max_tokens": 100000, "max_input_tokens": 200000},
     {"model_id": "claude-opus-4-1-20250805", "model_configs": {"reasoning_effort": "high"}, "temperature": 1, "max_tokens": 32000, "max_input_tokens": 200000},
     {"model_id": "claude-opus-4-5-20251101", "model_configs": {"reasoning_effort": "high"}, "temperature": 1, "max_tokens": 64000, "max_input_tokens": 200000},
-    {"model_id": "claude-sonnet-4-5-20250929", "model_configs": {"reasoning_effort": "high"}, "temperature": 0.7, "max_tokens": 64000, "max_input_tokens": 200000},
+    {"model_id": "claude-sonnet-4-5-20250929", "model_configs": {"reasoning_effort": "high"}, "temperature": 1, "max_tokens": 64000, "max_input_tokens": 200000},
     {"model_id": "gemini-2.5-pro", "model_configs": {"reasoning_effort": "high"}, "temperature": 0.7, "max_tokens": 65535, "max_input_tokens": 1048576},
     {"model_id": "gemini-2.5-flash", "model_configs": {"reasoning_effort": "high"}, "temperature": 0.7, "max_tokens": 65535, "max_input_tokens": 1048576},
-    {"model_id": "grok-4-0709", "model_configs": {"reasoning_effort": "high"}, "temperature": 0.7, "max_tokens": 256000, "max_input_tokens": 256000},
-    {"model_id": "gemini-3-pro-preview", "model_configs": {"reasoning_effort": "high"}, "temperature": 0.7, "max_tokens": 65535, "max_input_tokens": 1048576},
+    {"model_id": "grok-4-0709", "model_configs": {"reasoning_effort": "high"}, "temperature": 0.8, "max_tokens": 256000, "max_input_tokens": 256000},
+    {"model_id": "gemini-3-pro-preview", "model_configs": {"reasoning_effort": "high"}, "max_tokens": 65535, "max_input_tokens": 1048576},
 ]
 
 GRADING_MODEL = "gemini-2.5-flash"
 GRADING_MAX_TOKENS = 65535
-NUMBER_OF_RUNS = 8
+NUMBER_OF_RUNS = 1
 VALID_DOMAINS = ["Consulting", "Finance", "Legal", "Medicine"]
 
 
@@ -95,16 +97,19 @@ def save_result(output_file: str, headers: list[str], result: dict):
 
 async def generate(prompt: str, model_cfg: dict, attachments: list) -> dict:
     try:
+        model_config_kwargs = {
+            "model_id": model_cfg["model_id"],
+            "max_tokens": model_cfg["max_tokens"],
+            "max_input_tokens": model_cfg.get("max_input_tokens"),
+            "model_configs": model_cfg.get("model_configs"),
+            "number_of_runs": 1,
+        }
+        if "temperature" in model_cfg:
+            model_config_kwargs["temperature"] = model_cfg["temperature"]
+
         task = GenerationTask(
             prompt=prompt,
-            models=[ModelConfig(
-                model_id=model_cfg["model_id"],
-                max_tokens=model_cfg["max_tokens"],
-                max_input_tokens=model_cfg.get("max_input_tokens"),
-                temperature=model_cfg["temperature"],
-                model_configs=model_cfg.get("model_configs"),
-                number_of_runs=1,
-            )],
+            models=[ModelConfig(**model_config_kwargs)],
             attachments=attachments or None,
         )
         result = await run_generation_task_async(task)
@@ -158,7 +163,8 @@ async def process_task(task_data: dict, base_dir: str) -> dict | None:
                 # Generate
                 gen = await generate(prompt, model_cfg, attachments)
                 if not gen.get("success"):
-                    logger.error(f"  {prefix}: Generation failed - skipping task")
+                    error_msg = gen.get("error", "Unknown error")
+                    logger.error(f"  {prefix}: Generation failed - {error_msg}")
                     return None
 
                 result[f"{prefix}_response"] = gen["response"]

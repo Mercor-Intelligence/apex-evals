@@ -1,5 +1,5 @@
 # Core LLM dependency
-litellm
+litellm==1.83.0
 
 # Data and validation
 pydantic>=2.0.0
